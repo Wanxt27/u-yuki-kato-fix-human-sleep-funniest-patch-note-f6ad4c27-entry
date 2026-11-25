@@ -9,6 +9,13 @@ const NOTE =
 const OUT_DIR = "/output";
 const OUT_FILE = `${OUT_DIR}/entry.txt`;
 
+// The gate only accepts 1 to 160 characters: refuse to write anything
+// outside that range instead of submitting an invalid line.
+if (NOTE.length < 1 || NOTE.length > 160 || NOTE.trim().length === 0) {
+  console.error(`patch note is ${NOTE.length} characters, outside the 1-160 gate`);
+  process.exit(1);
+}
+
 mkdirSync(OUT_DIR, { recursive: true });
 if (existsSync(OUT_FILE)) rmSync(OUT_FILE);
 writeFileSync(OUT_FILE, NOTE, "utf8");
