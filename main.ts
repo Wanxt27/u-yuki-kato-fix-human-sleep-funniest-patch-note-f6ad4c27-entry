@@ -1,4 +1,4 @@
-import { existsSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 
 // One line of patch notes: human sleep, fixed at last. The joke treats sleep
 // as software — it crashes at 3 a.m. because a "just one more video"
@@ -19,4 +19,11 @@ if (NOTE.length < 1 || NOTE.length > 160 || NOTE.trim().length === 0) {
 mkdirSync(OUT_DIR, { recursive: true });
 if (existsSync(OUT_FILE)) rmSync(OUT_FILE);
 writeFileSync(OUT_FILE, NOTE, "utf8");
+
+// Read back what landed on disk: the graded artifact must be byte-identical
+// to the line above, so fail loudly here rather than ship a wrong file.
+if (readFileSync(OUT_FILE, "utf8") !== NOTE) {
+  console.error("entry.txt on disk does not match the patch note");
+  process.exit(1);
+}
 console.log(NOTE);
